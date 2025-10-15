@@ -9,18 +9,18 @@ export default function Home() {
         
         createChat({
           webhookUrl: 'https://growthgod.app.n8n.cloud/webhook/82b00b4f-3af7-4d27-8130-427db82147c8/chat',
-          mode: 'window',
+          mode: 'fullscreen',
           loadPreviousSession: true,
           showWelcomeScreen: false,
           enableStreaming: true,
           initialMessages: [
-            'Welcome to the future',
-            'How can I assist you today?'
+            'Welcome to Marketing Master',
+            'How can I help grow your business today?'
           ],
           i18n: {
             en: {
-              title: 'Neon AI Assistant',
-              subtitle: "Powered by advanced AI workflow",
+              title: 'Marketing Master',
+              subtitle: "AI-Powered Marketing Intelligence",
               footer: '',
               getStarted: 'Start Conversation',
               inputPlaceholder: 'Type your message...',
@@ -119,7 +119,7 @@ export default function Home() {
               textShadow: '0 0 80px hsl(170, 100%, 50%, 0.3)',
             }}
           >
-            Neon AI
+            Marketing Master
           </h1>
 
           {/* Subtitle */}

@@ -400,9 +400,9 @@
   --chat--message--bot--background: hsl(260, 10%, 16%);
   --chat--message--bot--color: hsl(0, 0%, 95%);
   --chat--message--bot--border: 3px solid hsl(170, 100%, 50%, 0.3);
-  --chat--message--user--background: linear-gradient(120deg, hsl(170, 100%, 50%), hsl(280, 100%, 65%));
-  --chat--message--user--color: hsl(260, 15%, 8%);
-  --chat--message--user--border: none;
+  --chat--message--user--background: hsl(260, 12%, 20%);
+  --chat--message--user--color: hsl(0, 0%, 95%);
+  --chat--message--user--border: 2px solid hsl(170, 100%, 50%, 0.5);
   --chat--message--pre--background: rgba(0, 0, 0, 0.3);
 
   --chat--toggle--background: linear-gradient(135deg, hsl(170, 100%, 50%), hsl(280, 100%, 65%));
@@ -543,11 +543,26 @@
   animation: fadeInUp 0.4s ease-out !important;
 }
 
-/* User messages with cyan glow */
+/* User messages with cyan glow and contrast background */
 #n8n-chat [class*="user-message"],
-#n8n-chat [class*="userMessage"] {
+#n8n-chat [class*="userMessage"],
+#n8n-chat [class*="user"] [class*="message"],
+#n8n-chat [class*="from-user"],
+#n8n-chat [data-role="user"],
+#n8n-chat [role="user"] {
   animation: fadeInUp 0.3s ease-out, neonPulse 1s ease-in-out !important;
   border-left: 2px solid hsl(170, 100%, 50%) !important;
+  background: hsl(260, 12%, 20%) !important;
+  padding: 12px 16px !important;
+  border-radius: 8px !important;
+}
+
+/* Target user message markdown content specifically */
+#n8n-chat [class*="user"] .chat-message-markdown,
+#n8n-chat [class*="from-user"] .chat-message-markdown {
+  background: hsl(260, 12%, 20%) !important;
+  padding: 12px 16px !important;
+  border-radius: 8px !important;
 }
 
 /* Bot messages with purple glow */
@@ -567,10 +582,13 @@
   animation: neonPulse 1.4s ease-in-out infinite !important;
 }
 
-/* Input field with neon focus */
+/* Input field with grey background and neon focus */
 #n8n-chat input[type="text"],
 #n8n-chat textarea {
   transition: box-shadow 0.3s ease !important;
+  background: hsl(0, 0%, 25%) !important;
+  border: 1px solid hsl(0, 0%, 35%) !important;
+  color: hsl(0, 0%, 95%) !important;
 }
 
 #n8n-chat input[type="text"]:focus,
@@ -578,16 +596,22 @@
   box-shadow: 0 0 0 2px hsl(170, 100%, 50%, 0.3),
               0 0 10px hsl(170, 100%, 50%, 0.2) !important;
   outline: none !important;
+  border-color: hsl(170, 100%, 50%, 0.5) !important;
 }
 
-/* Send button with neon highlight */
+/* Send button with neon gradient matching header */
 #n8n-chat button[class*="send"] {
   transition: all 0.3s ease !important;
+  background: linear-gradient(135deg, hsl(170, 100%, 50%), hsl(280, 100%, 65%), hsl(330, 100%, 60%)) !important;
+  border: none !important;
+  color: white !important;
+  padding: 8px 16px !important;
+  border-radius: 6px !important;
 }
 
 #n8n-chat button[class*="send"]:hover {
-  box-shadow: 0 0 15px hsl(170, 100%, 50%, 0.4),
-              0 0 25px hsl(170, 100%, 50%, 0.2) !important;
+  box-shadow: 0 0 20px hsl(170, 100%, 50%, 0.6),
+              0 0 30px hsl(280, 100%, 65%, 0.4) !important;
   transform: scale(1.05) !important;
 }
 

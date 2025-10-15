@@ -32,7 +32,7 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="text-lg font-bold">
-            Neon Chat AI
+            Marketing Master
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
