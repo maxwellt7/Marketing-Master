@@ -264,4 +264,4 @@ export class DbStorage implements IStorage {
   }
 }
 
-export const storage: IStorage = isDatabaseAvailable ? new DbStorage() : new MockStorage();
+export const storage: IStorage = new DbStorage();
