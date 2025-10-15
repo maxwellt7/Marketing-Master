@@ -1,9 +1,7 @@
 import { useEffect } from 'react';
-import { useChatPersistence } from '@/hooks/useChatPersistence';
+import { ThemeSelector } from '@/components/ThemeSelector';
 
 export default function Home() {
-  const { } = useChatPersistence();
-
   useEffect(() => {
     const loadChat = async () => {
       try {
@@ -39,6 +37,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
+      <ThemeSelector />
       {/* Neon Vector Background Effects */}
       <div className="absolute inset-0 pointer-events-none">
         {/* Top-left corner accent */}
