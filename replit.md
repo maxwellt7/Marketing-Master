@@ -15,6 +15,9 @@ A minimalistic dark-themed chatbot with stunning neon vector styling that integr
 - 📱 Responsive design (desktop & mobile)
 - ✨ Beautiful animations and neon glow effects
 - 🎯 Minimal, clean interface
+- 🎨 5 customizable theme presets (Electric Cyan, Vibrant Purple, Neon Green, Neon Blue, Neon Pink)
+- 📊 Analytics dashboard with real-time metrics and visualizations
+- 🗂️ Sidebar navigation for easy access to features
 
 ## n8n Integration
 - **Webhook URL**: `https://growthgod.app.n8n.cloud/webhook/82b00b4f-3af7-4d27-8130-427db82147c8/chat`
@@ -53,7 +56,15 @@ The app runs on port 5000 with both frontend and backend served together.
 - **Status**: Backend persistence infrastructure complete, frontend integration pending
 
 ## Recent Changes
-- **2025-10-15**: Added database schema and persistence layer
+- **2025-10-15**: Theme Presets & Analytics Dashboard
+  - Built theme switching system with 5 neon color presets
+  - Created analytics dashboard with real-time metrics and charts
+  - Implemented sidebar navigation using Shadcn components
+  - Added aggregated analytics API with queue-based response time calculation
+  - Integrated Recharts for data visualization
+  - Theme preferences persist via localStorage
+
+- **2025-10-15**: Database schema and persistence layer
   - Created chat_sessions, chat_messages, and chat_analytics tables
   - Built complete REST API for chat persistence
   - Implemented storage interface with Drizzle ORM
@@ -64,3 +75,34 @@ The app runs on port 5000 with both frontend and backend served together.
   - Implemented custom CSS variables for n8n chat widget
   - Added decorative SVG background elements
   - Built responsive landing page with feature cards
+
+## Theme System
+### Available Presets
+1. **Electric Cyan** (default) - Primary: hsl(170, 100%, 50%)
+2. **Vibrant Purple** - Primary: hsl(280, 100%, 65%)
+3. **Neon Green** - Primary: hsl(140, 100%, 50%)
+4. **Neon Blue** - Primary: hsl(200, 100%, 55%)
+5. **Neon Pink** - Primary: hsl(330, 100%, 60%)
+
+### Implementation
+- `useTheme` hook manages theme state
+- CSS custom properties updated dynamically
+- ThemeSelector component in top-right corner
+- localStorage persistence with key `neon-theme`
+
+## Analytics Dashboard
+### Metrics Tracked
+- **Total Sessions**: Number of chat conversations
+- **Total Messages**: All messages exchanged
+- **Avg Session Duration**: Average time per session (minutes)
+- **Avg Response Time**: Queue-based calculation from message timestamps (seconds)
+
+### Visualizations
+- **Messages by Hour**: Bar chart showing 24-hour distribution
+- **Sessions Over Time**: Line chart of last 7 days
+
+### Technical Details
+- GET `/api/analytics` returns aggregated data
+- Queue-based avgResponseTime correctly pairs user/assistant messages
+- Handles message bursts and multi-part responses
+- Charts use theme-aware neon colors from CSS variables
