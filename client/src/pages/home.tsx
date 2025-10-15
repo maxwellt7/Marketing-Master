@@ -35,7 +35,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="h-full bg-background relative overflow-hidden flex flex-col">
+    <div className="h-full bg-background relative flex flex-col">
       {/* Header with gradient headline */}
       <div className="flex-shrink-0 p-3 md:p-4 border-b border-primary/20 bg-card/50 backdrop-blur-sm">
         <h1 
@@ -50,8 +50,8 @@ export default function Home() {
         </h1>
       </div>
 
-      {/* Chat container - fullscreen */}
-      <div id="n8n-chat" data-testid="chat-container" className="flex-1 w-full" />
+      {/* Chat container - fullscreen with proper overflow */}
+      <div id="n8n-chat" data-testid="chat-container" className="flex-1 w-full overflow-auto" />
     </div>
   );
 }
