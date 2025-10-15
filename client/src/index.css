@@ -483,3 +483,116 @@
 #n8n-chat ::-webkit-scrollbar-thumb:hover {
   background: hsl(170, 100%, 50%, 0.5);
 }
+
+/* Neon glow animations */
+@keyframes neonPulse {
+  0%, 100% {
+    box-shadow: 0 0 5px hsl(170, 100%, 50%, 0.3),
+                0 0 10px hsl(170, 100%, 50%, 0.2),
+                0 0 15px hsl(170, 100%, 50%, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 10px hsl(170, 100%, 50%, 0.5),
+                0 0 20px hsl(170, 100%, 50%, 0.3),
+                0 0 30px hsl(170, 100%, 50%, 0.2);
+  }
+}
+
+@keyframes neonGlowPurple {
+  0%, 100% {
+    box-shadow: 0 0 5px hsl(280, 100%, 65%, 0.3),
+                0 0 10px hsl(280, 100%, 65%, 0.2),
+                0 0 15px hsl(280, 100%, 65%, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 10px hsl(280, 100%, 65%, 0.5),
+                0 0 20px hsl(280, 100%, 65%, 0.3),
+                0 0 30px hsl(280, 100%, 65%, 0.2);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Apply neon glow to chat toggle button */
+#n8n-chat button[class*="toggle"] {
+  animation: neonPulse 2s ease-in-out infinite !important;
+}
+
+/* Enhance new message animations */
+#n8n-chat [class*="message"] {
+  animation: fadeInUp 0.4s ease-out !important;
+}
+
+/* User messages with cyan glow */
+#n8n-chat [class*="user-message"],
+#n8n-chat [class*="userMessage"] {
+  animation: fadeInUp 0.3s ease-out, neonPulse 1s ease-in-out !important;
+  border-left: 2px solid hsl(170, 100%, 50%) !important;
+}
+
+/* Bot messages with purple glow */
+#n8n-chat [class*="bot-message"],
+#n8n-chat [class*="botMessage"],
+#n8n-chat [class*="assistant-message"] {
+  animation: fadeInUp 0.3s ease-out, neonGlowPurple 1s ease-in-out !important;
+  border-left: 2px solid hsl(280, 100%, 65%) !important;
+}
+
+/* Typing indicator with animated neon dots */
+#n8n-chat [class*="typing"] {
+  animation: scaleIn 0.2s ease-out !important;
+}
+
+#n8n-chat [class*="typing"] span {
+  animation: neonPulse 1.4s ease-in-out infinite !important;
+}
+
+/* Input field with neon focus */
+#n8n-chat input[type="text"],
+#n8n-chat textarea {
+  transition: box-shadow 0.3s ease !important;
+}
+
+#n8n-chat input[type="text"]:focus,
+#n8n-chat textarea:focus {
+  box-shadow: 0 0 0 2px hsl(170, 100%, 50%, 0.3),
+              0 0 10px hsl(170, 100%, 50%, 0.2) !important;
+  outline: none !important;
+}
+
+/* Send button with neon highlight */
+#n8n-chat button[class*="send"] {
+  transition: all 0.3s ease !important;
+}
+
+#n8n-chat button[class*="send"]:hover {
+  box-shadow: 0 0 15px hsl(170, 100%, 50%, 0.4),
+              0 0 25px hsl(170, 100%, 50%, 0.2) !important;
+  transform: scale(1.05) !important;
+}
+
+/* Chat window entrance animation */
+#n8n-chat [class*="window"],
+#n8n-chat [class*="container"] {
+  animation: scaleIn 0.3s ease-out !important;
+}
