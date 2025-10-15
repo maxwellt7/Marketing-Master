@@ -4,11 +4,20 @@ import type { ChatMessage } from '@shared/schema';
 
 export function useChatPersistence() {
   const [sessionId] = useState(() => {
-    const stored = localStorage.getItem('chat-session-id');
-    if (stored) return stored;
-    const newId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    localStorage.setItem('chat-session-id', newId);
-    return newId;
+    // Safely access localStorage only in browser
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('chat-session-id');
+        if (stored) return stored;
+        const newId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        localStorage.setItem('chat-session-id', newId);
+        return newId;
+      } catch (e) {
+        console.error('Failed to access localStorage:', e);
+      }
+    }
+    // Fallback to generating a session ID without localStorage
+    return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   });
 
   const sessionStartTime = useRef(Date.now());

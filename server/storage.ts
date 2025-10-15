@@ -9,7 +9,7 @@ import {
   chatMessages,
   chatAnalytics
 } from "@shared/schema";
-import { db } from "./db";
+import { db, isDatabaseAvailable } from "./db";
 import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {
@@ -36,29 +36,122 @@ export interface IStorage {
   }>;
 }
 
+export class MockStorage implements IStorage {
+  private sessions: Map<string, ChatSession> = new Map();
+  private messages: Map<string, ChatMessage[]> = new Map();
+  private analytics: Map<string, ChatAnalytics> = new Map();
+
+  async createChatSession(insertSession: InsertChatSession): Promise<ChatSession> {
+    const session: ChatSession = {
+      id: Math.random().toString(36).substring(7),
+      sessionId: insertSession.sessionId,
+      createdAt: new Date(),
+      lastMessageAt: new Date(),
+    };
+    this.sessions.set(insertSession.sessionId, session);
+    return session;
+  }
+
+  async getChatSession(sessionId: string): Promise<ChatSession | undefined> {
+    return this.sessions.get(sessionId);
+  }
+
+  async updateSessionLastMessage(sessionId: string): Promise<void> {
+    const session = this.sessions.get(sessionId);
+    if (session) {
+      session.lastMessageAt = new Date();
+    }
+  }
+
+  async createChatMessage(insertMessage: InsertChatMessage): Promise<ChatMessage> {
+    const message: ChatMessage = {
+      id: Math.random().toString(36).substring(7),
+      sessionId: insertMessage.sessionId,
+      role: insertMessage.role,
+      content: insertMessage.content,
+      timestamp: new Date(),
+    };
+    
+    const messages = this.messages.get(insertMessage.sessionId) || [];
+    messages.push(message);
+    this.messages.set(insertMessage.sessionId, messages);
+    
+    return message;
+  }
+
+  async getSessionMessages(sessionId: string): Promise<ChatMessage[]> {
+    return this.messages.get(sessionId) || [];
+  }
+
+  async createOrUpdateAnalytics(sessionId: string, messageCount: number, duration: number): Promise<ChatAnalytics> {
+    const existing = this.analytics.get(sessionId);
+    
+    const analyticsData: ChatAnalytics = {
+      id: existing?.id || Math.random().toString(36).substring(7),
+      sessionId,
+      messageCount,
+      sessionDuration: duration,
+      createdAt: existing?.createdAt || new Date(),
+    };
+    
+    this.analytics.set(sessionId, analyticsData);
+    return analyticsData;
+  }
+
+  async getAllAnalytics(): Promise<ChatAnalytics[]> {
+    return Array.from(this.analytics.values());
+  }
+
+  async getSessionAnalytics(sessionId: string): Promise<ChatAnalytics | undefined> {
+    return this.analytics.get(sessionId);
+  }
+
+  async getAggregatedAnalytics() {
+    const allSessions = Array.from(this.sessions.values());
+    const allMessages = Array.from(this.messages.values()).flat();
+    const allAnalytics = Array.from(this.analytics.values());
+
+    return {
+      totalSessions: allSessions.length,
+      totalMessages: allMessages.length,
+      avgSessionDuration: allAnalytics.length > 0 
+        ? allAnalytics.reduce((sum, a) => sum + a.sessionDuration, 0) / allAnalytics.length 
+        : 0,
+      avgResponseTime: 0,
+      messagesByHour: Array.from({ length: 24 }, (_, hour) => ({ hour, count: 0 })),
+      sessionsByDate: [],
+    };
+  }
+}
+
 export class DbStorage implements IStorage {
   async createChatSession(insertSession: InsertChatSession): Promise<ChatSession> {
+    if (!db) throw new Error('Database not available');
     const [session] = await db.insert(chatSessions).values(insertSession).returning();
     return session;
   }
 
   async getChatSession(sessionId: string): Promise<ChatSession | undefined> {
+    if (!db) throw new Error('Database not available');
     const [session] = await db.select().from(chatSessions).where(eq(chatSessions.sessionId, sessionId));
     return session;
   }
 
   async updateSessionLastMessage(sessionId: string): Promise<void> {
+    if (!db) throw new Error('Database not available');
     await db.update(chatSessions)
       .set({ lastMessageAt: new Date() })
       .where(eq(chatSessions.sessionId, sessionId));
   }
 
   async createChatMessage(insertMessage: InsertChatMessage): Promise<ChatMessage> {
+    if (!db) throw new Error('Database not available');
     const [message] = await db.insert(chatMessages).values(insertMessage).returning();
     return message;
   }
 
   async getSessionMessages(sessionId: string): Promise<ChatMessage[]> {
+    if (!db) throw new Error('Database not available');
     return await db.select()
       .from(chatMessages)
       .where(eq(chatMessages.sessionId, sessionId))
@@ -66,6 +159,7 @@ export class DbStorage implements IStorage {
   }
 
   async createOrUpdateAnalytics(sessionId: string, messageCount: number, duration: number): Promise<ChatAnalytics> {
+    if (!db) throw new Error('Database not available');
     const existing = await this.getSessionAnalytics(sessionId);
     
     if (existing) {
@@ -83,12 +177,14 @@ export class DbStorage implements IStorage {
   }
 
   async getAllAnalytics(): Promise<ChatAnalytics[]> {
+    if (!db) throw new Error('Database not available');
     return await db.select()
       .from(chatAnalytics)
       .orderBy(desc(chatAnalytics.createdAt));
   }
 
   async getSessionAnalytics(sessionId: string): Promise<ChatAnalytics | undefined> {
+    if (!db) throw new Error('Database not available');
     const [analytics] = await db.select()
       .from(chatAnalytics)
       .where(eq(chatAnalytics.sessionId, sessionId));
@@ -96,6 +192,7 @@ export class DbStorage implements IStorage {
   }
 
   async getAggregatedAnalytics() {
+    if (!db) throw new Error('Database not available');
     const allSessions = await db.select().from(chatSessions);
     const allMessages = await db.select().from(chatMessages);
     const allAnalytics = await db.select().from(chatAnalytics);
@@ -167,4 +264,4 @@ export class DbStorage implements IStorage {
   }
 }
 
-export const storage = new DbStorage();
+export const storage: IStorage = isDatabaseAvailable ? new DbStorage() : new MockStorage();

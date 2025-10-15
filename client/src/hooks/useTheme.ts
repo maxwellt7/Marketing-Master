@@ -38,8 +38,17 @@ const themePresets: Record<ThemePreset, ThemeColors> = {
 
 export function useTheme() {
   const [theme, setTheme] = useState<ThemePreset>(() => {
-    const stored = localStorage.getItem('neon-theme') as ThemePreset;
-    return stored || 'cyan';
+    // Safely access localStorage only in browser
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('neon-theme') as ThemePreset;
+        return stored || 'cyan';
+      } catch (e) {
+        console.error('Failed to access localStorage:', e);
+        return 'cyan';
+      }
+    }
+    return 'cyan';
   });
 
   useEffect(() => {
@@ -55,7 +64,14 @@ export function useTheme() {
     root.style.setProperty('--sidebar-ring', colors.primary);
     root.style.setProperty('--ring', colors.primary);
 
-    localStorage.setItem('neon-theme', theme);
+    // Safely store theme preference
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('neon-theme', theme);
+      } catch (e) {
+        console.error('Failed to save theme to localStorage:', e);
+      }
+    }
   }, [theme]);
 
   return { theme, setTheme, themes: Object.keys(themePresets) as ThemePreset[] };

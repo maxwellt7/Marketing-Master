@@ -28,14 +28,20 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <SidebarProvider style={style as React.CSSProperties}>
-          <div className="flex h-screen w-full">
+        <SidebarProvider style={style as React.CSSProperties} defaultOpen={true}>
+          <div className="flex h-screen w-full overflow-hidden">
             <AppSidebar />
-            <div className="flex flex-col flex-1">
-              <header className="flex items-center justify-between p-2 border-b">
-                <SidebarTrigger data-testid="button-sidebar-toggle" />
+            <div className="flex flex-col flex-1 min-w-0">
+              <header className="flex items-center justify-between p-2 md:p-3 border-b border-primary/20 bg-card/30 backdrop-blur-sm flex-shrink-0">
+                <SidebarTrigger 
+                  data-testid="button-sidebar-toggle" 
+                  className="hover:bg-primary/10 p-2 rounded-md transition-colors"
+                />
+                <div className="text-sm text-muted-foreground hidden md:block">
+                  AI-Powered Marketing Intelligence
+                </div>
               </header>
-              <main className="flex-1 overflow-auto">
+              <main className="flex-1 overflow-hidden">
                 <Router />
               </main>
             </div>
