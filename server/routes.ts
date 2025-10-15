@@ -58,8 +58,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validated = insertChatAnalyticsSchema.parse(req.body);
       const analytics = await storage.createOrUpdateAnalytics(
         validated.sessionId, 
-        validated.messageCount, 
-        validated.sessionDuration
+        validated.messageCount ?? 0, 
+        validated.sessionDuration ?? 0
       );
       res.json(analytics);
     } catch (error: any) {
@@ -69,7 +69,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/analytics", async (req, res) => {
     try {
-      const analytics = await storage.getAllAnalytics();
+      const analytics = await storage.getAggregatedAnalytics();
       res.json(analytics);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
