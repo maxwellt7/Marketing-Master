@@ -1,38 +1,91 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+import { 
+  type ChatSession, 
+  type InsertChatSession,
+  type ChatMessage,
+  type InsertChatMessage,
+  type ChatAnalytics,
+  type InsertChatAnalytics,
+  chatSessions,
+  chatMessages,
+  chatAnalytics
+} from "@shared/schema";
+import { db } from "./db";
+import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  // Chat Sessions
+  createChatSession(session: InsertChatSession): Promise<ChatSession>;
+  getChatSession(sessionId: string): Promise<ChatSession | undefined>;
+  updateSessionLastMessage(sessionId: string): Promise<void>;
+  
+  // Chat Messages
+  createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
+  getSessionMessages(sessionId: string): Promise<ChatMessage[]>;
+  
+  // Chat Analytics
+  createOrUpdateAnalytics(sessionId: string, messageCount: number, duration: number): Promise<ChatAnalytics>;
+  getAllAnalytics(): Promise<ChatAnalytics[]>;
+  getSessionAnalytics(sessionId: string): Promise<ChatAnalytics | undefined>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-
-  constructor() {
-    this.users = new Map();
+export class DbStorage implements IStorage {
+  async createChatSession(insertSession: InsertChatSession): Promise<ChatSession> {
+    const [session] = await db.insert(chatSessions).values(insertSession).returning();
+    return session;
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async getChatSession(sessionId: string): Promise<ChatSession | undefined> {
+    const [session] = await db.select().from(chatSessions).where(eq(chatSessions.sessionId, sessionId));
+    return session;
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+  async updateSessionLastMessage(sessionId: string): Promise<void> {
+    await db.update(chatSessions)
+      .set({ lastMessageAt: new Date() })
+      .where(eq(chatSessions.sessionId, sessionId));
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async createChatMessage(insertMessage: InsertChatMessage): Promise<ChatMessage> {
+    const [message] = await db.insert(chatMessages).values(insertMessage).returning();
+    return message;
+  }
+
+  async getSessionMessages(sessionId: string): Promise<ChatMessage[]> {
+    return await db.select()
+      .from(chatMessages)
+      .where(eq(chatMessages.sessionId, sessionId))
+      .orderBy(chatMessages.timestamp);
+  }
+
+  async createOrUpdateAnalytics(sessionId: string, messageCount: number, duration: number): Promise<ChatAnalytics> {
+    const existing = await this.getSessionAnalytics(sessionId);
+    
+    if (existing) {
+      const [updated] = await db.update(chatAnalytics)
+        .set({ messageCount, sessionDuration: duration })
+        .where(eq(chatAnalytics.sessionId, sessionId))
+        .returning();
+      return updated;
+    } else {
+      const [created] = await db.insert(chatAnalytics)
+        .values({ sessionId, messageCount, sessionDuration: duration })
+        .returning();
+      return created;
+    }
+  }
+
+  async getAllAnalytics(): Promise<ChatAnalytics[]> {
+    return await db.select()
+      .from(chatAnalytics)
+      .orderBy(desc(chatAnalytics.createdAt));
+  }
+
+  async getSessionAnalytics(sessionId: string): Promise<ChatAnalytics | undefined> {
+    const [analytics] = await db.select()
+      .from(chatAnalytics)
+      .where(eq(chatAnalytics.sessionId, sessionId));
+    return analytics;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DbStorage();
