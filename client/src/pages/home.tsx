@@ -1,6 +1,9 @@
 import { useEffect } from 'react';
+import { useChatPersistence } from '@/hooks/useChatPersistence';
 
 export default function Home() {
+  const { } = useChatPersistence();
+
   useEffect(() => {
     const loadChat = async () => {
       try {

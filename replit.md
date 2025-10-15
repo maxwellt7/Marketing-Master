@@ -46,9 +46,21 @@ npm run dev
 
 The app runs on port 5000 with both frontend and backend served together.
 
+## Database & Persistence
+- **PostgreSQL**: Neon-backed database for chat history and analytics
+- **Schema**: `chat_sessions`, `chat_messages`, `chat_analytics` tables
+- **API Routes**: REST endpoints for session/message CRUD and analytics
+- **Status**: Backend persistence infrastructure complete, frontend integration pending
+
 ## Recent Changes
-- **2025-01-14**: Initial project setup with n8n chat integration
-- Created dark theme with neon vector styling
-- Implemented custom CSS variables for n8n chat widget
-- Added decorative SVG background elements
-- Built responsive landing page with feature cards
+- **2025-10-15**: Added database schema and persistence layer
+  - Created chat_sessions, chat_messages, and chat_analytics tables
+  - Built complete REST API for chat persistence
+  - Implemented storage interface with Drizzle ORM
+  - Note: Frontend integration with n8n widget pending due to third-party library constraints
+  
+- **2025-10-14**: Initial project setup with n8n chat integration
+  - Created dark theme with neon vector styling
+  - Implemented custom CSS variables for n8n chat widget
+  - Added decorative SVG background elements
+  - Built responsive landing page with feature cards
