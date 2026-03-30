@@ -4,13 +4,18 @@ import ws from "ws";
 
 neonConfig.webSocketConstructor = ws;
 
-// Database is required
-if (!process.env.DATABASE_URL) {
-  throw new Error(
-    "DATABASE_URL must be set. Did you forget to provision a database?",
+let pool: Pool | null = null;
+let db: ReturnType<typeof drizzle> | null = null;
+let isDatabaseAvailable = false;
+
+if (process.env.DATABASE_URL) {
+  pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  db = drizzle(pool);
+  isDatabaseAvailable = true;
+} else {
+  console.warn(
+    "DATABASE_URL not set. Running with in-memory storage. Data will not persist across restarts.",
   );
 }
 
-export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-export const db = drizzle(pool);
-export const isDatabaseAvailable = true;
+export { pool, db, isDatabaseAvailable };
